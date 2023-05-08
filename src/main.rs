@@ -1,4 +1,9 @@
-use std::{io::stdout, sync::mpsc, thread, time::{Duration, Instant}};
+use std::{
+    io::stdout,
+    sync::mpsc,
+    thread,
+    time::{Duration, Instant},
+};
 
 use crossterm::{
     cursor::{Hide, Show},
@@ -7,12 +12,13 @@ use crossterm::{
     ExecutableCommand, Result,
 };
 
-use rand::{rngs::ThreadRng};
+use rand::rngs::ThreadRng;
 
 use floppy::{
-    bird::{Bird},
+    bird::Bird,
     frame::{self, new_frame, Drawable},
-    render, obstacles::Obstacles,
+    obstacles::Obstacles,
+    render,
 };
 
 fn main() -> Result<()> {
@@ -44,7 +50,7 @@ fn main() -> Result<()> {
     let mut is_move_up = false;
     let mut instant = Instant::now();
     let mut rng: ThreadRng = rand::thread_rng();
-    let mut obstacles = Obstacles::new(&mut rng);
+    let mut obstacles = Obstacles::new();
 
     // Game loop
     'gameloop: loop {
@@ -66,6 +72,9 @@ fn main() -> Result<()> {
             }
         }
 
+        // add
+        obstacles.add(&mut rng, delta);
+
         // Update
         bird.update(delta, is_move_up);
         obstacles.update(delta);
@@ -73,6 +82,7 @@ fn main() -> Result<()> {
         // Draw render
         bird.draw(&mut cur_farme);
         obstacles.draw(&mut cur_farme);
+
         let _ = render_tx.send(cur_farme);
         thread::sleep(Duration::from_millis(1));
         is_move_up = false;
