@@ -11,4 +11,6 @@ rand = "0.8.5"
 rusty_time = "0.12.0"
 ```
 ### To run
-`cargo run`
+```
+cargo run
+```
