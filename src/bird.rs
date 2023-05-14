@@ -1,12 +1,15 @@
-use std::time::Duration;
+use std::{time::Duration};
 
 use rusty_time::Timer;
 
-use crate::{frame::Drawable, NUM_COLS, NUM_ROWS};
+use crate::{
+    frame::{Drawable, Frame},
+    NUM_COLS, NUM_ROWS,
+};
 
 pub struct Bird {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
     timer: Timer,
 }
 

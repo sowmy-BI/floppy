@@ -67,17 +67,20 @@ fn main() -> Result<()> {
                         is_move_up = true;
                     }
                     KeyCode::Esc | KeyCode::Char('q') => break 'gameloop,
-                    _ => {},
+                    _ => {}
                 }
             }
         }
 
         // add
-        obstacles.add(&mut rng, delta);
-
+        obstacles.add(&mut rng);
         // Update
         bird.update(delta, is_move_up);
         obstacles.update(delta);
+        // hit
+        if obstacles.hit(&bird.x, &bird.y) {
+            break 'gameloop;
+        }
 
         // Draw render
         bird.draw(&mut cur_farme);

@@ -14,34 +14,30 @@ pub struct Pipe {
 pub struct Obstacles {
     pipes: Vec<Pipe>,
     update_timer: Timer,
-    add_timer: Timer,
 }
 
 impl Obstacles {
     pub fn new() -> Self {
         Self {
             pipes: Vec::new(),
-            update_timer: Timer::from_millis(300),
-            add_timer: Timer::from_millis(2000),
+            update_timer: Timer::from_millis(200),
         }
     }
 
-    pub fn add(&mut self, rng: &mut ThreadRng, delta: Duration) {
-        self.add_timer.update(delta);
-        if self.add_timer.ready {
+    pub fn add(&mut self, rng: &mut ThreadRng) {
+        if self.pipes.len() == 0 || (NUM_COLS - self.pipes.last().unwrap().x) > PIPE_WIDTH {
             let up_height = rng.gen_range(MIN_PIPE_HEIGHT..MAX_PIPE_HEIGHT);
             self.pipes.push(Pipe {
-                x: NUM_COLS - PIPE_WIDTH,
+                x: NUM_COLS - 1,
                 y: 0,
                 height: up_height,
             });
             let down_y = MIN_PIPE_HEIGHT + up_height;
             self.pipes.push(Pipe {
-                x: NUM_COLS - PIPE_WIDTH,
+                x: NUM_COLS - 1,
                 y: down_y,
                 height: NUM_ROWS - down_y,
             });
-            self.add_timer.reset();
         }
     }
 
@@ -57,8 +53,22 @@ impl Obstacles {
             self.update_timer.reset();
         }
     }
-}
 
+    pub fn hit(&self, x: &usize, y: &usize) -> bool {
+        let obstacles_count = self.pipes.len();
+        if obstacles_count >= 6 {
+            for index in 0..6 {
+                if self.pipes[index].x == *x
+                    && self.pipes[index].y <= *y
+                    && self.pipes[index].y + self.pipes[index].height >= *y
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
 
 impl Drawable for Obstacles {
     fn draw(&self, frame: &mut crate::frame::Frame) {
